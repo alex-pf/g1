@@ -39,8 +39,11 @@ jobs:
       - name: Add .nojekyll
         run: touch build/web/.nojekyll
 
-      # Публикация из ветки gh-pages: при первом push GitHub автоматически
-      # создаёт Pages-сайт с источником «Deploy from a branch».
+      # Публикация в ветку gh-pages существующего Pages-сайта.
+      # Pages включается один раз вручную: Settings → Pages →
+      # «Deploy from a branch» (gh-pages, /) или через API:
+      #   gh api -X POST repos/<owner>/<repo>/pages -f "source[branch]=gh-pages" -f "source[path]=/"
+      # Workflow сайт не создаёт — только публикует в уже включённый Pages.
       # На PR — только сборка (проверка), без публикации.
       - name: Publish to gh-pages
         if: github.event_name != 'pull_request'
