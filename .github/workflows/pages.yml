@@ -1,0 +1,53 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write # публикация в ветку gh-pages
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Project pages отдаются из подпути https://alex-pf.github.io/g1/,
+      # поэтому сборка строго с --base-href /g1/ — иначе ассеты уйдут в 404.
+      - name: Build web
+        run: flutter build web --release --base-href /g1/
+
+      # Пропускаем Jekyll-обработку на Pages.
+      - name: Add .nojekyll
+        run: touch build/web/.nojekyll
+
+      # Публикация из ветки gh-pages: при первом push GitHub автоматически
+      # создаёт Pages-сайт с источником «Deploy from a branch».
+      # На PR — только сборка (проверка), без публикации.
+      - name: Publish to gh-pages
+        if: github.event_name != 'pull_request'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/web
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: "deploy: web build ${{ github.sha }}"
