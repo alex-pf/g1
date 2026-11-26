@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import 'game/health/planet_health.dart';
-import 'ui/game_screen.dart';
+import 'ui/round_two_screen.dart';
 
 void main() {
   runApp(const G1App());
@@ -9,9 +9,11 @@ void main() {
 
 /// G1 — детская игра, первый продукт фабрики Fabric.
 ///
-/// Текущий этап: раунд 1 «Базовая защита» (US-01, issue #4) — один
-/// астероид в замкнутом поле с гравитацией Земли, отбивание свайпом,
-/// таймер раунда (issue #16), шкала жизней и стадии Земли (issue #15).
+/// Текущий этап: раунд 2 «Множественные угрозы» (US-02, issue #5) —
+/// 2–4 астероида в замкнутом поле с гравитацией Земли, мультитач-
+/// отбивание пальцами обеих рук, столкновения астероидов в воздухе,
+/// нарастание скорости по таймеру раунда (issue #16), шкала жизней,
+/// стадии Земли и дымящиеся кратеры в точках падения (issue #15).
 class G1App extends StatefulWidget {
   const G1App({super.key});
 
@@ -32,7 +34,7 @@ class _G1AppState extends State<G1App> {
           brightness: Brightness.dark,
         ),
       ),
-      home: GameScreen(health: _health),
+      home: RoundTwoScreen(health: _health),
     );
   }
 }
