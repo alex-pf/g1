@@ -26,9 +26,11 @@ void main() {
       expect(h.starFill(0), 4);
     });
 
-    test('астероид снимает 1 звезду, зонд и болид — 1,5 звезды', () {
+    test('астероид, гигант и зонд снимают 1 звезду, болид — 1,5 звезды', () {
+      // Таблица урона — docs/balance.md (issue #7).
       expect(ImpactKind.asteroid.quartersDelta, -4);
-      expect(ImpactKind.probe.quartersDelta, -6);
+      expect(ImpactKind.giant.quartersDelta, -4);
+      expect(ImpactKind.probe.quartersDelta, -4);
       expect(ImpactKind.bolid.quartersDelta, -6);
       expect(ImpactKind.fragment.quartersDelta, -1);
       expect(ImpactKind.capsule.quartersDelta, 1);
