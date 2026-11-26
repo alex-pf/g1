@@ -321,7 +321,30 @@ class _EarthPainter extends CustomPainter {
         // Кратер в точке удара (в пустыне кратеры рисует стадия).
         _crater(canvas, p, r * (e.kind == ImpactKind.fragment ? 0.06 : 0.1));
       }
+      // Дымящийся кратер (US-02, issue #5): локальный след падения
+      // дымится на всех стадиях, визуально связывая этапы разрушения.
+      if (e.kind != ImpactKind.capsule) {
+        _craterSmoke(canvas, p, r, seed: e.position.dx * 31 + e.position.dy * 17);
+      }
     }
+  }
+
+  /// Тонкий столбик дыма над кратером: мерцает и дрейфует по фазе
+  /// [time], чтобы кратеры «дышали» на любой стадии разрушения.
+  void _craterSmoke(Canvas canvas, Offset p, double r, {required double seed}) {
+    final phase = 2 * math.pi * time + seed;
+    final drift = math.sin(phase) * r * 0.02;
+    final rise = 0.5 + 0.5 * math.sin(phase * 0.7 + 1.3);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: p + Offset(drift, -r * (0.10 + 0.05 * rise)),
+        width: r * (0.10 + 0.03 * rise),
+        height: r * (0.14 + 0.08 * rise),
+      ),
+      Paint()
+        ..color = const Color(0xFF8A8A8A).withValues(alpha: 0.22 + 0.12 * rise)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
+    );
   }
 
   void _paintAtmosphere(
